@@ -1,11 +1,24 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import pic1 from "./assets/pic1.png";
-import pic2 from "./assets/pic2.png";
-import pic3 from "./assets/pic3.png";
-import pic4 from "./assets/pic4.png";
-import pic5 from "./assets/pic5.png";
-import pic6 from "./assets/pic6.png";
+// Instead of importing one by one:
+ // import pic1 from "./assets/pic1.png";
+// ...
+
+// 👇 Dynamically import all images from ./assets
+const pictureModules = import.meta.glob("./assets/*.{png,jpg,jpeg,gif}", { eager: true });
+
+// Convert modules to an array of paths
+const pictures = Object.values(pictureModules).map((mod) => mod.default);
+
+// Shuffle utility
+function shuffleArray(array) {
+  const arr = [...array];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
 
 var circleSize = "250px";
 var circlePadding = "10px";
@@ -107,15 +120,20 @@ function useElapsedTime(targetDate) {
 export default function App() {
   const elapsed = useElapsedTime("August 17, 2025 22:30:00 PST");
 
-  const pictures = [pic1, pic2, pic3, pic4, pic5, pic6];
+    // shuffle once at mount
+  const [shuffledPics] = useState(() => shuffleArray(pictures));
+
+  const [activePics, setActivePics] = useState([])
+
+  // const pictures = [pic1, pic2, pic3, pic4, pic5, pic6];
 
   // 👇 multiple active pictures
-  const [activePics, setActivePics] = useState([]);
+  // const [activePics, setActivePics] = useState([]);
 
   const handleCardClick = () => {
-    const chosen = pictures[Math.floor(Math.random() * pictures.length)];
+    const chosen = shuffledPics[Math.floor(Math.random() * shuffledPics.length)];
 
-    const circleDiameter = parseInt(circleSize); // 250px
+    const circleDiameter = parseInt(circleSize); 
     const imgSize = 150;
     const viewportW = window.innerWidth;
     const viewportH = window.innerHeight;
@@ -133,12 +151,11 @@ export default function App() {
       if (distance > circleRadius) break;
     } while (true);
 
-    const id = Date.now() + Math.random(); // unique id for key
+    const id = Date.now() + Math.random();
     const newPic = { id, src: chosen, top, left };
 
     setActivePics((prev) => [...prev, newPic]);
 
-    // remove after 3s (let AnimatePresence handle fade-out)
     setTimeout(() => {
       setActivePics((prev) => prev.filter((p) => p.id !== id));
     }, 2500);
