@@ -29,6 +29,7 @@ function CircleCard({ title, subtitle, content, style = {}, onClick }) {
     <div
       onClick={onClick}
       style={{
+        fontFamily: '"Comic Sans MS", "Comic Sans", cursive',
         width: circleSize,
         height: circleSize,
         padding: circlePadding,
@@ -70,7 +71,7 @@ function CircleCard({ title, subtitle, content, style = {}, onClick }) {
       <p
         style={{
           fontSize: "20px",
-          // fontFamily: 'Menlo, Monaco, Consolas',
+          
           color: "#2563eb",
           margin: 0,
           // fontWeight: "bold",
