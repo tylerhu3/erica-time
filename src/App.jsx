@@ -70,7 +70,7 @@ function CircleCard({ title, subtitle, content, style = {}, onClick }) {
       <p
         style={{
           fontSize: "20px",
-          fontFamily: 'Menlo, Monaco, Consolas',
+          // fontFamily: 'Menlo, Monaco, Consolas',
           color: "#2563eb",
           margin: 0,
           // fontWeight: "bold",
