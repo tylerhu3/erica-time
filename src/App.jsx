@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import './App.css'
 // Instead of importing one by one:
- // import pic1 from "./assets/pic1.png";
+// import pic1 from "./assets/pic1.png";
 // ...
 
 // 👇 Dynamically import all images from ./assets
@@ -12,10 +13,10 @@ const pictures = Object.values(pictureModules).map((mod) => mod.default);
 
 // Shuffle utility
 function shuffleArray(array) {
-  const arr = [...array];
+  const arr = [...array]; // Shallow copy to avoid mutating original
   for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
+    const j = Math.floor(Math.random() * (i + 1)); // random index from 0 to i inclusive; Math.random() returns [0, 1), ex: .39 * (4+1) = 1.95 -> floor = 1
+    [arr[i], arr[j]] = [arr[j], arr[i]]; // swap elements at i and j
   }
   return arr;
 }
@@ -24,10 +25,21 @@ var circleSize = "250px";
 var circlePadding = "10px";
 
 // Reusable Card Component (Perfect Circle)
+
 function CircleCard({ title, subtitle, content, style = {}, onClick }) {
+  const [isClicked, setIsClicked] = useState(false);
+
+  const handleClick = () => {
+    setIsClicked(true);
+    onClick?.();
+
+    // after a delay, reset the shadow
+    setTimeout(() => setIsClicked(false), 300);
+  };
+
   return (
-    <div
-      onClick={onClick}
+    <motion.div
+      onClick={handleClick}
       style={{
         fontFamily: '"Comic Sans MS", "Comic Sans", cursive',
         width: circleSize,
@@ -35,7 +47,6 @@ function CircleCard({ title, subtitle, content, style = {}, onClick }) {
         padding: circlePadding,
         backgroundColor: "white",
         borderRadius: "50%",
-        boxShadow: "10px 45px 50px 12px rgba(0, 0, 0, 0.25)",
         textAlign: "center",
         display: "flex",
         flexDirection: "column",
@@ -44,12 +55,17 @@ function CircleCard({ title, subtitle, content, style = {}, onClick }) {
         cursor: "pointer",
         ...style,
       }}
+      animate={{
+        boxShadow: isClicked
+          ? "0px 0px 40px 15px rgba(0, 0, 0, 0.25)" // even shadow
+          : "0px 0px 0px rgba(0,0,0,0)",
+      }}
+      transition={{ duration: 0.6 }}
     >
       <h1
         style={{
           fontSize: "18px",
           fontWeight: "bold",
-          marginBottom: "8px",
           margin: "0 0 8px 0",
           color: "#1f2937",
         }}
@@ -60,7 +76,6 @@ function CircleCard({ title, subtitle, content, style = {}, onClick }) {
         <p
           style={{
             fontSize: "18px",
-            marginBottom: "12px",
             margin: "0 0 12px 0",
             color: "#6b7280",
           }}
@@ -71,18 +86,18 @@ function CircleCard({ title, subtitle, content, style = {}, onClick }) {
       <p
         style={{
           fontSize: "20px",
-          
           color: "#2563eb",
           margin: 0,
-          // fontWeight: "bold",
           lineHeight: "1.2",
         }}
       >
         {content}
       </p>
-    </div>
+    </motion.div>
   );
 }
+
+
 
 // Custom hook for elapsed time calculation
 function useElapsedTime(targetDate) {
@@ -121,7 +136,7 @@ function useElapsedTime(targetDate) {
 export default function App() {
   const elapsed = useElapsedTime("August 17, 2025 22:30:00 PST");
 
-    // shuffle once at mount
+  // shuffle once at mount
   const [shuffledPics] = useState(() => shuffleArray(pictures));
 
   const [activePics, setActivePics] = useState([])
@@ -134,7 +149,7 @@ export default function App() {
   const handleCardClick = () => {
     const chosen = shuffledPics[Math.floor(Math.random() * shuffledPics.length)];
 
-    const circleDiameter = parseInt(circleSize); 
+    const circleDiameter = parseInt(circleSize);
     const imgSize = 150;
     const viewportW = window.innerWidth;
     const viewportH = window.innerHeight;
